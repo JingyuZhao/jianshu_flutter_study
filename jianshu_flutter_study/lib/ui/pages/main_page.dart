@@ -61,7 +61,7 @@ class TabLayout extends StatelessWidget {
       labelPadding: EdgeInsets.all(12.0),
       indicatorSize: TabBarIndicatorSize.label,
       tabs: _allPages.map((_Page page) {
-        Tab(
+        return Tab(
           text: IntlUtil.getString(context, page.labelId),
         );
       }).toList(),

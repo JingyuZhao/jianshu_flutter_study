@@ -23,6 +23,11 @@ class _SplashPageState extends State<SplashPage> {
   int _count = 3;
 
   SplashModel _splashModel;
+  @override
+  void initState() {
+    super.initState();
+    _initAsync();
+  }
 
   _initAsync() async {
     await SpUtil.getInstance();

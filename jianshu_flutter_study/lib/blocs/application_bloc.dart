@@ -1,6 +1,7 @@
 import 'package:jianshu_flutter_study/blocs/bloc_provider.dart';
 import 'package:rxdart/rxdart.dart';
-class ApplicationBloc implements BlocBase{
+
+class ApplicationBloc implements BlocBase {
   BehaviorSubject<int> _appEvent = BehaviorSubject<int>();
   Sink<int> get _appEventSink => _appEvent.sink;
   Stream<int> get appEventStream => _appEvent.stream;
@@ -27,9 +28,8 @@ class ApplicationBloc implements BlocBase{
     // TODO: implement onRefresh
     return null;
   }
-  
-  sendAppEvent(int type){
+
+  sendAppEvent(int type) {
     _appEventSink.add(type);
   }
-  
-} 
+}

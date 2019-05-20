@@ -6,7 +6,13 @@ import 'package:jianshu_flutter_study/data/net/dio_util.dart';
 import 'package:jianshu_flutter_study/ui/pages/main_page.dart';
 import 'package:jianshu_flutter_study/ui/pages/page_index.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(BlocProvider<ApplicationBloc>(
+      bloc: ApplicationBloc(),
+      child: BlocProvider(
+        child: MyApp(),
+        bloc: MainBloc(),
+      ),
+    ));
 
 class MyApp extends StatefulWidget {
   MyApp({Key key}) : super(key: key);

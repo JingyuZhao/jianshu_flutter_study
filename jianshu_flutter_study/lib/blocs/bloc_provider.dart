@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 abstract class BlocBase {
   Future getData({String labelId, int page});
 
@@ -8,6 +9,7 @@ abstract class BlocBase {
 
   void dispose();
 }
+
 class BlocProvider<T extends BlocBase> extends StatefulWidget {
   BlocProvider({
     Key key,
@@ -31,6 +33,7 @@ class BlocProvider<T extends BlocBase> extends StatefulWidget {
 
   static Type _typeOf<T>() => T;
 }
+
 class _BlocProviderState<T> extends State<BlocProvider<BlocBase>> {
   @override
   void dispose() {
