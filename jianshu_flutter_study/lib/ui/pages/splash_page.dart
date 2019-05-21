@@ -2,37 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:jianshu_flutter_study/common/component_index.dart';
 
 class SplashPage extends StatefulWidget {
-  SplashPage({Key key}) : super(key: key);
-
-  _SplashPageState createState() => _SplashPageState();
+  @override
+  State<StatefulWidget> createState() {
+    return new SplashPageState();
+  }
 }
 
-class _SplashPageState extends State<SplashPage> {
+class SplashPageState extends State<SplashPage> {
   TimerUtil _timerUtil;
 
   List<String> _guideList = [
     Utils.getImgPath('guide1'),
     Utils.getImgPath('guide2'),
     Utils.getImgPath('guide3'),
-    Utils.getImgPath('guide4')
+    Utils.getImgPath('guide4'),
   ];
 
-  List<Widget> _bannerList = List();
+  List<Widget> _bannerList = new List();
 
   int _status = 0;
   int _count = 3;
 
   SplashModel _splashModel;
+
   @override
   void initState() {
     super.initState();
     _initAsync();
   }
 
-  _initAsync() async {
+  void _initAsync() async {
     await SpUtil.getInstance();
     _loadSplashData();
-    Observable.just(1).delay(Duration(milliseconds: 500)).listen((onData) {
+    Observable.just(1).delay(new Duration(milliseconds: 500)).listen((_) {
+//      SpUtil.putBool(Constant.KEY_GUIDE, false);
       if (SpUtil.getBool(Constant.KEY_GUIDE) != true &&
           ObjectUtil.isNotEmpty(_guideList)) {
         SpUtil.putBool(Constant.KEY_GUIDE, true);
@@ -43,59 +46,61 @@ class _SplashPageState extends State<SplashPage> {
     });
   }
 
-  _loadSplashData() {
+  void _loadSplashData() {
     _splashModel = SpHelper.getSplashModel();
     if (_splashModel != null) {
       setState(() {});
     }
-    HttpUtils httpUtils = HttpUtils();
-    httpUtils.getSplash().then((onValue) {
-      if (!ObjectUtil.isEmpty(onValue.imgUrl)) {
-        if (_splashModel == null || _splashModel.imgUrl != onValue.imgUrl) {
-          SpHelper.putObject(Constant.KEY_GUIDE, onValue);
+    HttpUtils httpUtil = new HttpUtils();
+    httpUtil.getSplash().then((model) {
+      if (!ObjectUtil.isEmpty(model.imgUrl)) {
+        if (_splashModel == null || (_splashModel.imgUrl != model.imgUrl)) {
+          SpHelper.putObject(Constant.KEY_SPLASH_MODEL, model);
           setState(() {
-            _splashModel = onValue;
+            _splashModel = model;
           });
-        } else {
-          SpHelper.putObject(Constant.KEY_GUIDE, null);
         }
+      } else {
+        SpHelper.putObject(Constant.KEY_SPLASH_MODEL, null);
       }
     });
   }
 
-  _initBanner() {
+  void _initBanner() {
     _initBannerData();
     setState(() {
       _status = 2;
     });
   }
 
-  _initBannerData() {
-    for (var i = 0; i < _guideList.length; i++) {
-      if (i == _guideList.length - 1) {
-        _bannerList.add(Stack(
+  void _initBannerData() {
+    for (int i = 0, length = _guideList.length; i < length; i++) {
+      if (i == length - 1) {
+        _bannerList.add(new Stack(
           children: <Widget>[
-            Image.asset(
+            new Image.asset(
               _guideList[i],
               fit: BoxFit.fill,
               width: double.infinity,
               height: double.infinity,
             ),
-            Align(
+            new Align(
               alignment: Alignment.bottomCenter,
-              child: Container(
-                margin: EdgeInsets.only(bottom: 160),
-                child: InkWell(
-                  onTap: _goMainPage(),
-                  child: CircleAvatar(
+              child: new Container(
+                margin: EdgeInsets.only(bottom: 160.0),
+                child: new InkWell(
+                  onTap: () {
+                    _goMain();
+                  },
+                  child: new CircleAvatar(
                     radius: 48.0,
                     backgroundColor: Colors.indigoAccent,
-                    child: Padding(
+                    child: new Padding(
                       padding: EdgeInsets.all(2.0),
-                      child: Text(
-                        "立即体验",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      child: new Text(
+                        '立即体验',
                         textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontSize: 16.0),
                       ),
                     ),
                   ),
@@ -105,7 +110,7 @@ class _SplashPageState extends State<SplashPage> {
           ],
         ));
       } else {
-        _bannerList.add(Image.asset(
+        _bannerList.add(new Image.asset(
           _guideList[i],
           fit: BoxFit.fill,
           width: double.infinity,
@@ -115,39 +120,38 @@ class _SplashPageState extends State<SplashPage> {
     }
   }
 
-  _initSplash() {
+  void _initSplash() {
     if (_splashModel == null) {
-      _goMainPage();
+      _goMain();
     } else {
       _doCountDown();
     }
   }
 
-  _doCountDown() {
+  void _doCountDown() {
     setState(() {
       _status = 1;
     });
-    _timerUtil = TimerUtil(mTotalTime: 3 * 1000);
+    _timerUtil = new TimerUtil(mTotalTime: 3 * 1000);
     _timerUtil.setOnTimerTickCallback((int tick) {
       double _tick = tick / 1000;
       setState(() {
         _count = _tick.toInt();
       });
-
       if (_tick == 0) {
-        _goMainPage();
+        _goMain();
       }
-      _timerUtil.startCountDown();
     });
+    _timerUtil.startCountDown();
   }
 
-  _goMainPage() {
-    Navigator.of(context).pushReplacementNamed("/MainPage");
+  void _goMain() {
+    Navigator.of(context).pushReplacementNamed('/MainPage');
   }
 
   Widget _buildSplashBg() {
-    return Image.asset(
-      Utils.getImgPath("splash_bg"),
+    return new Image.asset(
+      Utils.getImgPath('splash_bg'),
       width: double.infinity,
       fit: BoxFit.fill,
       height: double.infinity,
@@ -156,30 +160,28 @@ class _SplashPageState extends State<SplashPage> {
 
   Widget _buildAdWidget() {
     if (_splashModel == null) {
-      return Container(
+      return new Container(
         height: 0.0,
       );
     }
-    return Offstage(
+    return new Offstage(
       offstage: !(_status == 1),
-      child: InkWell(
+      child: new InkWell(
         onTap: () {
-          if (ObjectUtil.isEmpty(_splashModel.url)) {
-            return;
-          }
-          _goMainPage();
+          if (ObjectUtil.isEmpty(_splashModel.url)) return;
+          _goMain();
           NavigatorUtil.pushWeb(context,
               title: _splashModel.title, url: _splashModel.url);
         },
-        child: Container(
+        child: new Container(
           alignment: Alignment.center,
-          child: CachedNetworkImage(
+          child: new CachedNetworkImage(
             width: double.infinity,
             height: double.infinity,
             fit: BoxFit.fill,
             imageUrl: _splashModel.imgUrl,
-            placeholder: (ctx, url) => _buildSplashBg(),
-            errorWidget: (ctx, url, error) => _buildSplashBg(),
+            placeholder: (context, url) => _buildSplashBg(),
+            errorWidget: (context, url, error) => _buildSplashBg(),
           ),
         ),
       ),
@@ -188,29 +190,59 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Stack(
+    return new Material(
+      child: new Stack(
         children: <Widget>[
-          Offstage(
+          new Offstage(
             offstage: !(_status == 0),
             child: _buildSplashBg(),
           ),
-          Offstage(
+          new Offstage(
             offstage: !(_status == 2),
             child: ObjectUtil.isEmpty(_bannerList)
-                ? Container()
-                : Swiper(
+                ? new Container()
+                : new Swiper(
                     autoStart: false,
                     circular: false,
                     indicator: CircleSwiperIndicator(
-                        radius: 4.0,
-                        padding: EdgeInsets.only(bottom: 30.0),
-                        itemColor: Colors.black26),
-                    children: _bannerList,
-                  ),
+                      radius: 4.0,
+                      padding: EdgeInsets.only(bottom: 30.0),
+                      itemColor: Colors.black26,
+                    ),
+                    children: _bannerList),
           ),
+          _buildAdWidget(),
+          new Offstage(
+            offstage: !(_status == 1),
+            child: new Container(
+              alignment: Alignment.bottomRight,
+              margin: EdgeInsets.all(20.0),
+              child: InkWell(
+                onTap: () {
+                  _goMain();
+                },
+                child: new Container(
+                    padding: EdgeInsets.all(12.0),
+                    child: new Text(
+                      '跳过 $_count',
+                      style: new TextStyle(fontSize: 14.0, color: Colors.white),
+                    ),
+                    decoration: new BoxDecoration(
+                        color: Color(0x66000000),
+                        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                        border: new Border.all(
+                            width: 0.33, color: Colours.divider))),
+              ),
+            ),
+          )
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (_timerUtil != null) _timerUtil.cancel(); //记得中dispose里面把timer cancel。
   }
 }
